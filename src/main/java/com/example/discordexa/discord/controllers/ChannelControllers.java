@@ -28,8 +28,13 @@ public class ChannelControllers {
 
 
     @GetMapping("/channels")
-    public List<Channel> getChannel() {
-        return channelRepository.findAll();
+    public ResponseEntity<List<ChannelGetDTO>> getChannel() {
+        List<Channel> channelList = channelRepository.findAll();
+        ModelMapper mapper = new ModelMapper();
+        return new ResponseEntity<>(channelList
+                .stream()
+                .map((channel) -> mapper.map(channel, ChannelGetDTO.class))
+                .toList(), HttpStatus.OK);
     }
 
 
