@@ -28,6 +28,9 @@ public class UserControllers {
     @Autowired
     private UserRepository userRepository;
 
+    public UserControllers(UserRepository userRepository) {
+
+    }
 
 
     /**

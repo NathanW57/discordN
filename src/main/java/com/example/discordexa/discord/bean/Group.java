@@ -6,6 +6,7 @@ package com.example.discordexa.discord.bean;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class Group {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringEscapeUtils.escapeHtml4(name.trim());
     }
 
     public void removeMember(User user) {

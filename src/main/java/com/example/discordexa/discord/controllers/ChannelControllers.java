@@ -1,13 +1,8 @@
-package com.example.discordexa.discord.controllers;//package controllers;
-
+package com.example.discordexa.discord.controllers;
 
 import com.example.discordexa.discord.DTO.ChannelGetDTO;
-import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.bean.Channel;
-import com.example.discordexa.discord.bean.User;
 import com.example.discordexa.discord.repository.ChannelRepository;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

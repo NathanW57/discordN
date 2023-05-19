@@ -4,13 +4,15 @@ package com.example.discordexa.discord.bean;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.hibernate.annotations.Fetch;
 
 import java.util.List;
 
 @Getter
-@Setter
 @Entity
+@ToString
 public class User {
 
     @Id
@@ -34,5 +36,39 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Role> role;
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
+    public void setEmail(String email) {
+        this.email = StringEscapeUtils.escapeHtml4(email.trim().toLowerCase());
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = StringEscapeUtils.escapeHtml4(firstname.toLowerCase().trim());
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = StringEscapeUtils.escapeHtml4(lastname.toUpperCase().trim());
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRole(List<Role> role) {
+        this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                '}';
+    }
 }

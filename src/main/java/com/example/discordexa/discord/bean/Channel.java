@@ -5,6 +5,7 @@ import com.example.discordexa.discord.Enum.EVisibility;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 
 import java.util.ArrayList;
@@ -94,4 +95,19 @@ public class Channel {
 
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = StringEscapeUtils.escapeHtml4(name.trim());
+    }
+
+    public void setVisibility(EVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public void setMembers(List<User> members) {
+        this.members = members;
+    }
 }
