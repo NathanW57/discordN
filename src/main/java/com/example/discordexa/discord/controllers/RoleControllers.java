@@ -25,9 +25,6 @@ public class RoleControllers {
     @Autowired
     private RoleRepository roleRepository;
 
-
-
-
     @GetMapping("/roles")
     @Transactional
     public ResponseEntity<List<Role>> getRoles() throws SQLException {

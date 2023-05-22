@@ -1,5 +1,11 @@
 package com.example.discordexa.discord.DTO;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class MessageCreateDTO {
         private long userId;
         private String content;
@@ -16,19 +22,4 @@ public class MessageCreateDTO {
     }
 
 
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

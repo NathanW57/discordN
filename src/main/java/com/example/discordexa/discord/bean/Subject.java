@@ -1,6 +1,6 @@
 package com.example.discordexa.discord.bean;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,25 +8,18 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Entity
+@Inheritance(strategy=InheritanceType.JOINED)
 public abstract class Subject {
     @Column(name = "sub_id")
-    protected Long id;
+    @Id
+    protected long id;
 
     @Column(name = "sub_sent_at")
     protected LocalDateTime sentAt;
 
-    @Column(name = "sub_channel")
-    protected Channel channel;
 
-    public Long getId() {
+    public long getId() {
         return id;
-    }
-
-    public LocalDateTime getSentAt() {
-        return sentAt;
-    }
-
-    public Channel getChannel() {
-        return channel;
     }
 }

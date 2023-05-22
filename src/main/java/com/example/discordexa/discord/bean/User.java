@@ -12,10 +12,11 @@ import java.util.List;
 
 @Getter
 @Entity
-@ToString
+@Table(name = "user")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usr_id")
     private Integer id;
 

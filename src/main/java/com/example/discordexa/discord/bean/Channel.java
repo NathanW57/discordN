@@ -8,13 +8,13 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 @Entity
 @Getter
 @Setter
+@Table(name = "channel")
 public class Channel {
     @Id
     @Column(name = "cha_id")
@@ -26,11 +26,11 @@ public class Channel {
     @Column(name = "cha_visibility")
     private EVisibility visibility;
 
-//    @OneToMany
-//    private List<Message> messages;
+    @OneToMany
+    private List<Message> messages;
 
-//    @OneToMany
-//    private List<Meeting> meetings;
+    @OneToMany
+    private List<Meeting> meetings;
 
     @ManyToMany
     @JoinTable(name = "is_member_of",
@@ -38,18 +38,12 @@ public class Channel {
             inverseJoinColumns = @JoinColumn (name = "usr_id", referencedColumnName = "usr_id")
     )
     private List<User> members;
-
-//    @ManyToMany
-//    @JoinTable(name = "is_notified_of",
-//            joinColumns = @JoinColumn(name = "cha_id",referencedColumnName = "cha_id"),
-//            inverseJoinColumns = @JoinColumn (name = "not_id", referencedColumnName = "not_id")
-//    )
-//    private List<User> subscribers;
-
-//    @ManyToOne
-//    @JoinColumn(name = "cha_visibility")
-//    private List<EVisibility> visibility;
-
+    @ManyToMany
+    @JoinTable(name = "has_subscribed_to",
+            joinColumns = @JoinColumn(name = "cha_id",referencedColumnName = "cha_id"),
+            inverseJoinColumns = @JoinColumn (name = "usr_id", referencedColumnName = "usr_id")
+    )
+    private List<User> subscribers;
 
     public Channel() {
 

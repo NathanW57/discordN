@@ -3,10 +3,10 @@ package com.example.discordexa.discord.controllers;
 
 
 
-import com.example.discordexa.discord.DTO.GroupGetDTO;
+
 import com.example.discordexa.discord.DTO.UserCreateDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
-import com.example.discordexa.discord.bean.Group;
+
 import com.example.discordexa.discord.bean.User;
 import com.example.discordexa.discord.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

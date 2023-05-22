@@ -8,10 +8,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
 @Getter
 @Setter
+@ToString
+@Table(name = "role")
 public class Role {
 
     @Id

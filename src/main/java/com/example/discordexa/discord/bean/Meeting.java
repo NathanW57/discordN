@@ -3,7 +3,7 @@ package com.example.discordexa.discord.bean;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,12 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class Meeting {
-
-    @Id
-    @Column(name = "sub_id")
-    private long id;
-
+@Table(name = "meeting")
+public class Meeting extends Subject{
     @Column(name = "mee_name")
     private String name;
 
@@ -27,14 +23,6 @@ public class Meeting {
     @Column(name = "mee_duration")
     private int duration;
 
-//    @Column(name = "mee_user")
-//    @OneToOne
-//    private User organizer;
-
-    public Meeting(LocalDateTime datetime, int duration) {
-        this.datetime = datetime;
-        this.duration = duration;
-    }
 
     public Meeting() {
 
