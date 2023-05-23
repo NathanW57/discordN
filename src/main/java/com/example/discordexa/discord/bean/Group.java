@@ -6,6 +6,7 @@ package com.example.discordexa.discord.bean;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "user_group")
+@ToString
 public class Group {
     @Id
     @Column(name = "gro_id")
@@ -27,7 +29,7 @@ public class Group {
             joinColumns = @JoinColumn(name = "gro_id", referencedColumnName = "gro_id"),
             inverseJoinColumns = @JoinColumn(name = "usr_id", referencedColumnName = "usr_id")
     )
-    private List<User> users ;
+    private List<User> members ;
 
     public Group(String name) {
         this.name = name.trim();
@@ -56,11 +58,11 @@ public class Group {
     }
 
     public void removeMember(User user) {
-        this.users.remove(user);
+        this.members.remove(user);
     }
 
     public void addMember(User user){
-        this.users.add(user);
+        this.members.add(user);
     }
 
 }

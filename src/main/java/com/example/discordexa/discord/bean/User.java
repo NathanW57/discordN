@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "user")
+@ToString
 public class User {
 
     @Id

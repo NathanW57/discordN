@@ -48,11 +48,12 @@ public class GroupControllers {
 
     @GetMapping("/groupsDetail")
     public ResponseEntity<List<GroupGetFinestDTO>> getAllGroupWithMembers(){
-        List<Group> groupList = groupRepository.getGroupAll();
+        List<Group> groupList = groupRepository.findAll();
+        System.out.println(groupList.stream().toList());
         ModelMapper mapper = new ModelMapper();
         return new ResponseEntity<>(groupList
                 .stream()
-                .map((group) -> mapper.map(group, GroupGetFinestDTO.class))
+                .map((group) -> mapper.map(group, GroupGetFinestDTO.class)).peek(System.out::println)
                 .toList(),(HttpStatus.OK));
     }
 
