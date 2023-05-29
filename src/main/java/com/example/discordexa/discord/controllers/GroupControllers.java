@@ -8,6 +8,7 @@ import com.example.discordexa.discord.bean.Group;
 import com.example.discordexa.discord.bean.User;
 import com.example.discordexa.discord.repository.GroupRepository;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,6 +29,8 @@ public class GroupControllers {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(GroupControllers.class);
 
 
 
@@ -46,6 +51,48 @@ public class GroupControllers {
     }
 
 
+
+
+    @GetMapping("/group/{id}")
+    public ResponseEntity<GroupGetFinestDTO> getGroupByID(@PathVariable("id") Long id) {
+        logger.info("Received request for group with id {}", id);  // Log the received id
+
+        Optional<Group> optionalGroup = groupRepository.findById(Math.toIntExact(id));
+        if (optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
+            GroupGetFinestDTO groupDTO = new GroupGetFinestDTO();
+            groupDTO.setId(group.getId());
+            groupDTO.setName(group.getName());
+
+            List<UserGetDTO> userDTOs = group.getMembers()
+                    .stream()
+                    .map(user -> {
+                        UserGetDTO userDTO = new UserGetDTO();
+                        userDTO.setId(user.getId());
+                        userDTO.setFirstname(user.getFirstname());
+                        userDTO.setLastname(user.getLastname());
+                        userDTO.setEmail(user.getEmail());
+                        return userDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            groupDTO.setMembers(userDTOs);
+
+            logger.info("Responding with group {}", groupDTO);  // Log the returned group
+
+            return ResponseEntity.ok().body(groupDTO);
+        } else {
+            logger.error("Could not find group with id {}", id);  // Log error when group not found
+            throw new NotFoundException("Could not find group with id=" + id);
+        }
+    }
+
+
+
+
+
+
+
     @GetMapping("/groupsDetail")
     public ResponseEntity<List<GroupGetFinestDTO>> getAllGroupWithMembers(){
         List<Group> groupList = groupRepository.findAll();
@@ -58,17 +105,17 @@ public class GroupControllers {
     }
 
 
-    @GetMapping("/group/{id}")
-    public ResponseEntity<GroupGetDTO> getGroup(@PathVariable("id") Integer id) throws SQLException, ClassNotFoundException {
-        Optional<Group> optionalGroup = groupRepository.findById(id);
-
-        if(optionalGroup.isPresent()) {
-            ModelMapper mapper = new ModelMapper();
-            GroupGetDTO groupGetDTO = mapper.map(optionalGroup.get(), GroupGetDTO.class);
-            return new ResponseEntity<>(groupGetDTO, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+//    @GetMapping("/group/{id}")
+//    public ResponseEntity<GroupGetDTO> getGroup(@PathVariable("id") Integer id) throws SQLException, ClassNotFoundException {
+//        Optional<Group> optionalGroup = groupRepository.findById(id);
+//
+//        if(optionalGroup.isPresent()) {
+//            ModelMapper mapper = new ModelMapper();
+//            GroupGetDTO groupGetDTO = mapper.map(optionalGroup.get(), GroupGetDTO.class);
+//            return new ResponseEntity<>(groupGetDTO, HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//    }
 
 
     @PostMapping("/groups")

@@ -27,5 +27,4 @@ public class Message extends Subject{
     public Message() {
 
     }
-
 }
