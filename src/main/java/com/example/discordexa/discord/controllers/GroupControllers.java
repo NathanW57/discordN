@@ -55,7 +55,7 @@ public class GroupControllers {
 
     @GetMapping("/group/{id}")
     public ResponseEntity<GroupGetFinestDTO> getGroupByID(@PathVariable("id") Long id) {
-        logger.info("Received request for group with id {}", id);  // Log the received id
+        logger.info("Received request for group with id {}", id);
 
         Optional<Group> optionalGroup = groupRepository.findById(Math.toIntExact(id));
         if (optionalGroup.isPresent()) {

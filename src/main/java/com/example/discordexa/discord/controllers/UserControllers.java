@@ -7,6 +7,7 @@ package com.example.discordexa.discord.controllers;
 import com.example.discordexa.discord.DTO.UserCreateDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
 
+import com.example.discordexa.discord.DTO.UserGetFinestDTO;
 import com.example.discordexa.discord.bean.User;
 import com.example.discordexa.discord.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -62,6 +63,20 @@ public class UserControllers {
         if(optional.isPresent()) {
             ModelMapper mapper = new ModelMapper();
             UserGetDTO userGetDTO = mapper.map(optional.get(), UserGetDTO.class);
+            return new ResponseEntity<>(userGetDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+    @GetMapping("/userFinest/{id}")
+    public ResponseEntity<UserGetFinestDTO> getUserFinest(@PathVariable("id") long id) throws SQLException {
+
+        Optional<User> optional = userRepository.findByIdRole(id);
+
+        if(optional.isPresent()) {
+            ModelMapper mapper = new ModelMapper();
+            UserGetFinestDTO userGetDTO = mapper.map(optional.get(), UserGetFinestDTO.class);
             return new ResponseEntity<>(userGetDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
