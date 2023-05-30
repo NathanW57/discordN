@@ -8,18 +8,28 @@ import com.example.discordexa.discord.DTO.UserCreateDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
 
 import com.example.discordexa.discord.DTO.UserGetFinestDTO;
+import com.example.discordexa.discord.Enum.Erole;
+import com.example.discordexa.discord.bean.ApiResponse;
+import com.example.discordexa.discord.bean.Role;
 import com.example.discordexa.discord.bean.User;
+import com.example.discordexa.discord.repository.RoleRepository;
 import com.example.discordexa.discord.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.validation.BindingResult;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import java.util.stream.Collectors;
+
 
 @RestController
 @CrossOrigin
@@ -27,6 +37,9 @@ public class UserControllers {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public UserControllers(UserRepository userRepository) {
 
@@ -90,28 +103,35 @@ public class UserControllers {
 //     */
 
     @PostMapping(value = "/users")
-    public ResponseEntity<User> addUser(@Valid UserCreateDTO userDTO, @RequestPart("users") User user) throws SQLException {
-        Optional<User> optionalUtilisateurs = userRepository.findById(user.getId());
-
-        if (optionalUtilisateurs.isPresent()) {
-
-            User userToUpDate = optionalUtilisateurs.get();
-            userToUpDate.setFirstname(user.getFirstname());
-            userToUpDate.setLastname(user.getLastname());
-            userToUpDate.setEmail(user.getEmail());
-
-            userRepository.save(user);
-            return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDTO userDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            String errorMsg = result.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
         }
 
-        ModelMapper mapper = new ModelMapper();
-        user = mapper.map(userDTO, User.class);
-        User newUser = userRepository.save(user);
+        try {
+            ModelMapper mapper = new ModelMapper();
 
-        UserGetDTO userGetDTO = mapper.map(newUser, UserGetDTO.class);
-        return new ResponseEntity<>(user,HttpStatus.CREATED);
+            // Créer un nouvel utilisateur avec le rôle ROLE_USER
+            User newUser = mapper.map(userDTO, User.class);
+            Role role = roleRepository.findByName(Erole.ROLE_USER);
+            newUser.addRole(role);
+            User savedUser = userRepository.save(newUser);
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
+        }
     }
-//
+
+
+
+
+
+
+
+    //
 //    /**
 //     * Updates an existing user.
 //     *

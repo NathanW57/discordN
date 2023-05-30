@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.hibernate.annotations.Fetch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,7 +22,7 @@ public class User {
     @Column(name = "usr_id")
     private Integer id;
 
-    @Column(name = "usr_email")
+    @Column(name = "usr_email", unique = true)
     private String email;
 
     @Column(name = "usr_firstname")
@@ -73,4 +74,13 @@ public class User {
                 ", role=" + role +
                 '}';
     }
+
+    public void addRole(Role role) {
+        if (this.role == null) {
+            this.role = new ArrayList<>();
+        }
+        this.role.add(role);
+    }
+
+
 }
