@@ -41,7 +41,7 @@ public class UserTest {
 
     @Test
     void testSetId() {
-        int id = 1;
+        Long id = 1L;
         user.setId(id);
         assertEquals(id, user.getId());
     }
@@ -91,7 +91,7 @@ public class UserTest {
 
     @Test
     void testToString() {
-        user.setId(1);
+        user.setId(1L);
         user.setEmail("john@example.com");
         user.setLastname("Doe");
         user.setFirstname("John");

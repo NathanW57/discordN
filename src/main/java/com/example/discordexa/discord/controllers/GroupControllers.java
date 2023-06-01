@@ -7,10 +7,12 @@ import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.bean.Group;
 import com.example.discordexa.discord.bean.User;
 import com.example.discordexa.discord.repository.GroupRepository;
+import com.example.discordexa.discord.repository.UserRepository;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,9 @@ public class GroupControllers {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(GroupControllers.class);
 
@@ -49,6 +54,56 @@ public class GroupControllers {
                 .map((group) -> mapper.map(group, GroupGetDTO.class))
                 .toList(), HttpStatus.OK);
     }
+
+
+
+    @DeleteMapping("/group/{groupId:[0-9]+}/members/{userId:[0-9]+}")
+    public ResponseEntity<?> removeMember(@PathVariable("groupId") Long groupId, @PathVariable("userId") Long userId) {
+        try {
+            Group group = groupRepository.findById(Math.toIntExact(groupId))
+                    .orElseThrow(() -> new NotFoundException("Could not find group with id=" + groupId));
+
+            User user = userRepository.findById(Math.toIntExact(userId))
+                    .orElseThrow(() -> new NotFoundException("Could not find user with id=" + userId));
+
+            if (group.getMembers().contains(user)) {
+                group.removeMember(user);
+                groupRepository.save(group);
+
+                return ResponseEntity.ok().body(group);
+            } else {
+                throw new NotFoundException("User with id=" + userId + " is not a member of the group with id=" + groupId);
+            }
+        } catch (DataAccessException dae) {
+            throw new RuntimeException(dae.getMessage());
+        }
+    }
+
+
+
+    @PostMapping("/group/{groupId:[0-9]+}/members/{userId:[0-9]+}")
+    public ResponseEntity<?> addMember(@PathVariable("groupId") Long groupId, @PathVariable("userId") Long userId) {
+        try {
+            Group group = groupRepository.findById(Math.toIntExact(groupId))
+                    .orElseThrow(() -> new NotFoundException("Could not find group with id=" + groupId));
+
+            User user = userRepository.findById(Math.toIntExact(userId))
+                    .orElseThrow(() -> new NotFoundException("Could not find user with id=" + userId));
+
+            if (!group.getMembers().contains(user)) {
+                group.addMember(user);
+                groupRepository.save(group);
+
+                return ResponseEntity.ok().build();
+            } else {
+                throw new NotFoundException("User with id=" + userId + " is already a member of the group with id=" + groupId);
+            }
+        } catch (DataAccessException dae) {
+            throw new RuntimeException(dae.getMessage());
+        }
+    }
+
+
 
 
 

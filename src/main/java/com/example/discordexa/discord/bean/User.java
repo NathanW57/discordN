@@ -2,6 +2,10 @@ package com.example.discordexa.discord.bean;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +13,9 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.hibernate.annotations.Fetch;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -20,26 +26,40 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usr_id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "usr_email", unique = true)
+    @NotNull(message = "ne peut être vide")
+    @Pattern(regexp = "^[a-zA-Z0-9-_]+\\.*[a-zA-Z0-9-_]*@([a-zA-Z0-9]+\\.{1})+([a-zA-Z]){2,3}$", message = "doit " +
+            "être" + " un email valide")
     private String email;
 
     @Column(name = "usr_firstname")
+    @NotNull(message = "ne peut être vide")
+    @NotBlank
+    @Size(min = 2, max = 50)
     private String firstname;
 
     @Column(name = "usr_lastname")
+    @NotNull(message = "ne peut être vide")
+    @NotBlank
+    @Size(min = 2, max = 50)
     private String lastname;
 
 
     @Column(name = "usr_password")
+    @NotNull(message = "ne peut être vide")
+    @Size(min = 8, max = 200)
+    @NotBlank
     private String password;
 
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private List<Role> role;
+    @JoinTable(name = "has_role", joinColumns = @JoinColumn(name = "usr_id", referencedColumnName = "usr_id"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "rol_id"))
+    private Set<Role> role;
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -59,7 +79,7 @@ public class User {
         this.password = password;
     }
 
-    public void setRole(List<Role> role) {
+    public void setRole(Set<Role> role) {
         this.role = role;
     }
 
@@ -77,7 +97,7 @@ public class User {
 
     public void addRole(Role role) {
         if (this.role == null) {
-            this.role = new ArrayList<>();
+            this.role = new HashSet<>();
         }
         this.role.add(role);
     }

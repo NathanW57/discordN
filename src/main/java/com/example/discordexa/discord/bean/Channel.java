@@ -5,13 +5,17 @@ import com.example.discordexa.discord.Enum.EVisibility;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -22,6 +26,7 @@ public class Channel {
 
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cha_id")
     private Long id;
 
@@ -32,18 +37,20 @@ public class Channel {
     private EVisibility visibility;
 
     @OneToMany
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 
     @OneToMany
-    private List<Meeting> meetings;
+    private List<Meeting> meetings = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "is_member_of",
-            joinColumns = @JoinColumn(name = "cha_id",referencedColumnName = "cha_id"),
-            inverseJoinColumns = @JoinColumn (name = "usr_id", referencedColumnName = "usr_id")
-    )
-    private List<User> members;
-    @ManyToMany
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "is_allowed_in", joinColumns = @JoinColumn(name = "cha_id", referencedColumnName = "cha_id"), inverseJoinColumns = @JoinColumn(name = "usr_id", referencedColumnName = "usr_id"))
+    @ToString.Exclude
+    private Set<User> members = new HashSet<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "has_subscribed_to",
             joinColumns = @JoinColumn(name = "cha_id",referencedColumnName = "cha_id"),
             inverseJoinColumns = @JoinColumn (name = "usr_id", referencedColumnName = "usr_id")
@@ -106,7 +113,7 @@ public class Channel {
         this.visibility = visibility;
     }
 
-    public void setMembers(List<User> members) {
+    public void setMembers(Set<User> members) {
         this.members = members;
     }
 }

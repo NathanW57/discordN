@@ -9,7 +9,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,18 +20,19 @@ import java.util.List;
 @ToString
 public class Group {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gro_id")
-    private long id;
+    private Long id;
 
     @Column(name = "gro_name")
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinTable(name = "is_member_of",
             joinColumns = @JoinColumn(name = "gro_id", referencedColumnName = "gro_id"),
             inverseJoinColumns = @JoinColumn(name = "usr_id", referencedColumnName = "usr_id")
     )
-    private List<User> members ;
+    private Set<User> members = new HashSet<>();
 
     public Group(String name) {
         this.name = name.trim();
@@ -41,11 +44,11 @@ public class Group {
         this.id = id;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
