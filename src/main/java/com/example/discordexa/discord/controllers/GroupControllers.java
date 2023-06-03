@@ -80,6 +80,27 @@ public class GroupControllers {
     }
 
 
+    @GetMapping("/group/{id}/nonmembers")
+    public ResponseEntity<List<UserGetDTO>> getNonMembers(@PathVariable("id") Long id) {
+        logger.info("Received request for non-members of group with id {}", id);
+
+        Group group = groupRepository.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new NotFoundException("Could not find group with id=" + id));
+
+        List<User> allUsers = userRepository.findAll();
+        List<User> nonMembers = allUsers.stream()
+                .filter(user -> !group.getMembers().contains(user))
+                .collect(Collectors.toList());
+
+        ModelMapper mapper = new ModelMapper();
+        List<UserGetDTO> nonMemberDTOs = nonMembers.stream()
+                .map(user -> mapper.map(user, UserGetDTO.class))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(nonMemberDTOs, HttpStatus.OK);
+    }
+
+
 
     @PostMapping("/group/{groupId:[0-9]+}/members/{userId:[0-9]+}")
     public ResponseEntity<?> addMember(@PathVariable("groupId") Long groupId, @PathVariable("userId") Long userId) {
