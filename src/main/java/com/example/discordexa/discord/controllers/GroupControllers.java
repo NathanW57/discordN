@@ -101,6 +101,27 @@ public class GroupControllers {
     }
 
 
+    @PostMapping("/group/{groupId:[0-9]+}/members")
+    public ResponseEntity<?> addMembers(@PathVariable("groupId") Long groupId, @RequestBody List<Long> userIds) {
+        Group group = groupRepository.findById(groupId.intValue())
+                .orElseThrow(() -> new NotFoundException("Could not find group with id=" + groupId));
+
+        List<Integer> userIdsAsInts = userIds.stream().map(Long::intValue).collect(Collectors.toList());
+        List<User> usersToAdd = userRepository.findAllById(userIdsAsInts);
+
+        usersToAdd.forEach(user -> {
+            if (!group.getMembers().contains(user)) {
+                group.addMember(user);
+            }
+        });
+
+        groupRepository.save(group);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+
 
     @PostMapping("/group/{groupId:[0-9]+}/members/{userId:[0-9]+}")
     public ResponseEntity<?> addMember(@PathVariable("groupId") Long groupId, @PathVariable("userId") Long userId) {
