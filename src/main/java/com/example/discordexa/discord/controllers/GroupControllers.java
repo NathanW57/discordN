@@ -80,6 +80,22 @@ public class GroupControllers {
     }
 
 
+    //get user by id in group by id
+    @GetMapping("/group/{groupId:[0-9]+}/members/{userId:[0-9]+}")
+    public ResponseEntity<?> getMember(@PathVariable("groupId") Long groupId, @PathVariable("userId") Long userId) {
+        Group group = groupRepository.findById(Math.toIntExact(groupId))
+                .orElseThrow(() -> new NotFoundException("Could not find group with id=" + groupId));
+
+        User user = userRepository.findById(Math.toIntExact(userId))
+                .orElseThrow(() -> new NotFoundException("Could not find user with id=" + userId));
+
+        if (group.getMembers().contains(user)) {
+            return ResponseEntity.ok().body(user);
+        } else {
+            throw new NotFoundException("User with id=" + userId + " is not a member of the group with id=" + groupId);
+        }
+    }
+
     @GetMapping("/group/{id}/nonmembers")
     public ResponseEntity<List<UserGetDTO>> getNonMembers(@PathVariable("id") Long id) {
         logger.info("Received request for non-members of group with id {}", id);
