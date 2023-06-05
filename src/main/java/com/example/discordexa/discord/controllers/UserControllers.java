@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -34,6 +35,11 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin
 public class UserControllers {
+
+
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
@@ -82,6 +88,13 @@ public class UserControllers {
     }
 
 
+
+    /**
+     * Retrieves a user by ID.
+     *
+     * @param id the user ID
+     * @return a User object and OK status or a NOT_FOUND status if not found
+     */
     @GetMapping("/userFinest/{id}")
     public ResponseEntity<UserGetFinestDTO> getUserFinest(@PathVariable("id") long id) throws SQLException {
 
@@ -116,10 +129,15 @@ public class UserControllers {
 
             // Créer un nouvel utilisateur avec le rôle ROLE_USER
             User newUser = mapper.map(userDTO, User.class);
+            newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             Role role = roleRepository.findByName(Erole.ROLE_USER);
             newUser.addRole(role);
+
+            // Sauvegarder l'utilisateur
             User savedUser = userRepository.save(newUser);
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+
+
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
         }
