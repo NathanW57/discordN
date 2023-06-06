@@ -15,6 +15,15 @@ public interface GroupRepository extends JpaRepository<Group,Integer> {
     @Modifying
     @Query(value = "DELETE FROM is_member_of WHERE usr_id = :id", nativeQuery = true)
     void deleteUserFromGroups(@Param("id") Long id);
+
+
+    @Modifying
+    @Query(value= "DELETE FROM user_group WHERE gro_id = :id", nativeQuery = true)
+    void deleteGroup(@Param("id") Long id);
+
+
+    @Query(value = "DELETE FROM is_member_of WHERE gro_id = :id", nativeQuery = true)
+    void deleteGroupMembers(@Param("id") Long id);
 }
 
 

@@ -2,10 +2,12 @@ package com.example.discordexa.discord.DTO;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter
 @Setter
+@ToString
 public class GroupGetDTO {
 
     private long id;
@@ -15,10 +17,4 @@ public class GroupGetDTO {
     public GroupGetDTO(){}
 
 
-    @Override
-    public String toString() {
-        return "GroupGetDTO{" +
-                "name='" + name + '\'' +
-                '}';
-    }
 }

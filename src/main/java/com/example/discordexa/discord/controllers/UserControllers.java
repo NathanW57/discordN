@@ -203,13 +203,7 @@ public class UserControllers {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
-//
-//    @GET
-//    @Path("/usersNotified")
-//    public Response getAllUserNotified() throws SQLException {
-//        List<UserNotified>  userNotifiedList = userRepository.selectAllUserNotified();
-//        return Response.ok(userNotifiedList).build();
-//    }
+
 }
 
 

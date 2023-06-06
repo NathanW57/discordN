@@ -8,6 +8,7 @@ import com.example.discordexa.discord.bean.Group;
 import com.example.discordexa.discord.bean.User;
 import com.example.discordexa.discord.repository.GroupRepository;
 import com.example.discordexa.discord.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import org.modelmapper.ModelMapper;
@@ -218,21 +219,10 @@ public class GroupControllers {
     }
 
 
-//    @GetMapping("/group/{id}")
-//    public ResponseEntity<GroupGetDTO> getGroup(@PathVariable("id") Integer id) throws SQLException, ClassNotFoundException {
-//        Optional<Group> optionalGroup = groupRepository.findById(id);
-//
-//        if(optionalGroup.isPresent()) {
-//            ModelMapper mapper = new ModelMapper();
-//            GroupGetDTO groupGetDTO = mapper.map(optionalGroup.get(), GroupGetDTO.class);
-//            return new ResponseEntity<>(groupGetDTO, HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//    }
 
 
     @PostMapping("/groups")
-    public ResponseEntity<GroupGetDTO> addGroup(@Valid GroupCreateDTO groupCreateDTO) throws SQLException, ClassNotFoundException {
+    public ResponseEntity<GroupGetDTO> addGroup(@Valid @RequestBody GroupCreateDTO groupCreateDTO) throws SQLException, ClassNotFoundException {
         ModelMapper mapper = new ModelMapper();
         Group group = mapper.map(groupCreateDTO,Group.class);
         Group newGroup = groupRepository.save(group);
@@ -243,27 +233,32 @@ public class GroupControllers {
     }
 
 
-//    @PUT
-//    @Path("/groups")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response updateGroup(Group group) {
-//        try {
-//            Group updatedGroup = groupRepository.updateGroup(group);
-//            return Response.ok(updatedGroup).build();
-//        } catch (NotFoundException e) {
-//            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-//        } catch (SQLException e) {
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-//        }
-//    }
+    @PutMapping("/groups/{id}")
+    public ResponseEntity<GroupGetDTO> updateGroup(@PathVariable("id") Long id, @Valid GroupCreateDTO groupCreateDTO) throws SQLException, ClassNotFoundException {
+        Optional<Group> optionalGroup = groupRepository.findById(Math.toIntExact(id));
+
+        if(optionalGroup.isPresent()){
+            ModelMapper mapper = new ModelMapper();
+            Group group = mapper.map(groupCreateDTO,Group.class);
+            group.setId(id);
+            Group newGroup = groupRepository.save(group);
+
+            GroupGetDTO groupGetDTO = mapper.map(newGroup, GroupGetDTO.class);
+
+            return new ResponseEntity<>(groupGetDTO,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
 
     @DeleteMapping("/groups/{id}")
-    public ResponseEntity<Group> deleteGroup(@PathVariable("id") Integer id) {
-        Optional<Group> optionalGroup = groupRepository.findById(id);
+    @Transactional
+    public ResponseEntity<Group> deleteGroup(@PathVariable("id") Long id) {
+        Optional<Group> optionalGroup = groupRepository.findById(Math.toIntExact(id));
 
         if(optionalGroup.isPresent()){
-            groupRepository.deleteById(id);
+            groupRepository.deleteGroupMembers(id);
+            groupRepository.deleteGroup(id);
             return new ResponseEntity<>(optionalGroup.get(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

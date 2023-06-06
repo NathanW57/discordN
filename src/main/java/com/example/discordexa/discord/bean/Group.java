@@ -34,15 +34,8 @@ public class Group {
     )
     private Set<User> members = new HashSet<>();
 
-    public Group(String name) {
-        this.name = name.trim();
-    }
     public Group(){}
 
-    public Group(long id, String lastname) {
-        this.name = lastname;
-        this.id = id;
-    }
 
     public Long getId() {
         return id;

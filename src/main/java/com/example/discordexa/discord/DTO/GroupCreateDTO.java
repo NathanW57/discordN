@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter
 @Setter
+@ToString
 public class GroupCreateDTO {
     @NotNull(message = "Group is required")
     @NotBlank(message = "Group is required")
@@ -19,15 +21,6 @@ public class GroupCreateDTO {
     public GroupCreateDTO(){
     }
 
-    public GroupCreateDTO(String name) {
-        this.name = name;
-    }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name.trim();
-    }
 }
