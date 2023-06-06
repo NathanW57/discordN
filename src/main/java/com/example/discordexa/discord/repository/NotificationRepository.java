@@ -5,4 +5,7 @@ import com.example.discordexa.discord.bean.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationRepository extends JpaRepository<Notification,Integer> {
+
+
+    void deleteAllByReceiverId(Long receiver_id);
 }

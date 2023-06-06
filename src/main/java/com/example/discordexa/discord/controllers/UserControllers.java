@@ -12,8 +12,8 @@ import com.example.discordexa.discord.Enum.Erole;
 import com.example.discordexa.discord.bean.ApiResponse;
 import com.example.discordexa.discord.bean.Role;
 import com.example.discordexa.discord.bean.User;
-import com.example.discordexa.discord.repository.RoleRepository;
-import com.example.discordexa.discord.repository.UserRepository;
+import com.example.discordexa.discord.repository.*;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +44,23 @@ public class UserControllers {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Autowired
+    private ChannelRepository channelRepository;
+
+    @Autowired
+    private GroupRepository groupRepository;
+
+
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
 
     public UserControllers(UserRepository userRepository) {
 
@@ -173,11 +188,16 @@ public class UserControllers {
 //     * @return an ok status or an error status
 //     */
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable("id") Integer id) throws SQLException {
-        Optional<User> optionalUtilisateurs = userRepository.findById(id);
+    @Transactional
+    public ResponseEntity<User> deleteUser(@PathVariable("id") Long id) throws SQLException {
+        Optional<User> optionalUtilisateurs = userRepository.findById(Math.toIntExact(id));
 
         if(optionalUtilisateurs.isPresent()){
-            userRepository.deleteById(id);
+            channelRepository.deleteUserFromChannels(id);
+            groupRepository.deleteUserFromGroups(id);
+            messageRepository.deleteAllBySenderId(id);
+            notificationRepository.deleteAllByReceiverId(id);
+            userRepository.deleteById(Math.toIntExact(id));
             return new ResponseEntity<>(null,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
