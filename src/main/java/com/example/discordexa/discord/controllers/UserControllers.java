@@ -73,7 +73,7 @@ public class UserControllers {
      * @return a list of users
      */
     @GetMapping("/users")
-    public ResponseEntity<List<UserGetDTO>> getUsers() throws SQLException {
+    public ResponseEntity<List<UserGetDTO>> getAllUsers() throws SQLException {
         List<User> userList = userRepository.findAll();
         ModelMapper mapper = new ModelMapper();
         return new ResponseEntity<>(userList

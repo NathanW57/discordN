@@ -1,8 +1,11 @@
 package com.example.discordexa.discord.controllers;
 
 import com.example.discordexa.discord.DTO.ChannelGetDTO;
+import com.example.discordexa.discord.DTO.ChannelGetFinestDTO;
+import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.bean.Channel;
 import com.example.discordexa.discord.repository.ChannelRepository;
+import com.example.discordexa.discord.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -21,6 +25,8 @@ public class ChannelControllers {
     @Autowired
     ChannelRepository channelRepository;
 
+    @Autowired
+    UserRepository userRepository;
 
     @GetMapping("/channels")
     public ResponseEntity<List<ChannelGetDTO>> getChannel() {
@@ -46,25 +52,48 @@ public class ChannelControllers {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-////    @POST
-////    @Path("/channels")
-////    @Produces(MediaType.APPLICATION_JSON)
-////    public Response addGroup(ChannelCreateDTO channelCreateDTO) throws SQLException, ClassNotFoundException {
-////
-////        ModelMapper mapper = new ModelMapper();
-////
-////
-////        Channel channel = new Channel(
-////                channelCreateDTO.getName().trim()
-////        );
-////        Channel channel1 = repositoryChannel.addChannel(channel);
-////        ChannelGetDTO channelGetDTO = mapper.map(channel1, ChannelGetDTO.class);
-////
-////        return Response.ok(channelGetDTO)
-////                .status(201)
-////                .build();
-////    }
 
+    //getGroupFinestById
+    @GetMapping("/channel/finest/{id}")
+    public ResponseEntity<ChannelGetFinestDTO> getChannelFinestById(@PathVariable("id") Long id) throws SQLException, ClassNotFoundException {
+
+        Optional<Channel> optionalChannel = channelRepository.findById(Math.toIntExact(id));
+
+        if(optionalChannel.isPresent()) {
+            ModelMapper mapper = new ModelMapper();
+            ChannelGetFinestDTO channelGetDTO = mapper.map(optionalChannel.get(), ChannelGetFinestDTO.class);
+
+            List<UserGetDTO> userDTOs = channelGetDTO.getMembers()
+                    .stream()
+                    .map(user -> {
+                        UserGetDTO userDTO = new UserGetDTO();
+                        userDTO.setId(user.getId());
+                        userDTO.setFirstname(user.getFirstname());
+                        userDTO.setLastname(user.getLastname());
+                        userDTO.setEmail(user.getEmail());
+                        return userDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            List<UserGetDTO> userSubscribes = channelGetDTO.getSubscribers()
+                    .stream()
+                    .map(user -> {
+                        UserGetDTO userDTO = new UserGetDTO();
+                        userDTO.setId(user.getId());
+                        userDTO.setFirstname(user.getFirstname());
+                        userDTO.setLastname(user.getLastname());
+                        userDTO.setEmail(user.getEmail());
+                        return userDTO;
+                    })
+                    .collect(Collectors.toList());
+
+                    channelGetDTO.setSubscribers(userSubscribes);
+                    channelGetDTO.setMembers(userDTOs);
+
+            return new ResponseEntity<>(channelGetDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
 
     @DeleteMapping("/channel/{id}")
