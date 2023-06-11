@@ -4,6 +4,7 @@ import com.example.discordexa.discord.DTO.ChannelGetDTO;
 import com.example.discordexa.discord.DTO.ChannelGetFinestDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.bean.Channel;
+import com.example.discordexa.discord.mapper.ChannelMapper;
 import com.example.discordexa.discord.repository.ChannelRepository;
 import com.example.discordexa.discord.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -30,26 +31,20 @@ public class ChannelControllers {
 
     @GetMapping("/channels")
     public ResponseEntity<List<ChannelGetDTO>> getChannel() {
-        List<Channel> channelList = channelRepository.findAll();
-        ModelMapper mapper = new ModelMapper();
-        return new ResponseEntity<>(channelList
+        List<ChannelGetDTO> channelList = channelRepository.findAll()
                 .stream()
-                .map((channel) -> mapper.map(channel, ChannelGetDTO.class))
-                .toList(), HttpStatus.OK);
+                .map(ChannelMapper::toGetDto)
+                .toList();
+        return new ResponseEntity<>(channelList, HttpStatus.OK);
     }
 
 
     @GetMapping("/channel/{id}")
     public ResponseEntity<ChannelGetDTO> getGroupById(@PathVariable("id") Integer id) throws SQLException, ClassNotFoundException {
 
-        Optional<Channel> optionalChannel = channelRepository.findById(id);
-
-        if(optionalChannel.isPresent()) {
-            ModelMapper mapper = new ModelMapper();
-            ChannelGetDTO channelGetDTO = mapper.map(optionalChannel.get(), ChannelGetDTO.class);
-            return new ResponseEntity<>(channelGetDTO, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return channelRepository.findById(id).map(ChannelMapper::toGetDto)
+                .map(channelGetDTO -> new ResponseEntity<>(channelGetDTO, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 
