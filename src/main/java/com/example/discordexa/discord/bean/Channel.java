@@ -47,7 +47,7 @@ public class Channel {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "is_allowed_in", joinColumns = @JoinColumn(name = "cha_id", referencedColumnName = "cha_id"), inverseJoinColumns = @JoinColumn(name = "usr_id", referencedColumnName = "usr_id"))
     @ToString.Exclude
-    private Set<User> members = new HashSet<>();
+    private List<User> members;
 
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -113,7 +113,7 @@ public class Channel {
         this.visibility = visibility;
     }
 
-    public void setMembers(Set<User> members) {
+    public void setMembers(List<User> members) {
         this.members = members;
     }
 }

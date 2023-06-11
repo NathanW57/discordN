@@ -41,7 +41,7 @@ public class SecurityConfiguration {
                 .and().csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/connexion","/inscription","/","/swagger-ui/**","/v3/**").permitAll()
+                .requestMatchers("/connexion","/inscription","/","/swagger-ui/**","/v3/**","*").permitAll()
                 .requestMatchers("/**").hasAnyRole("ADMIN","USER")
 
                 .anyRequest().authenticated()

@@ -27,4 +27,8 @@ public class Message extends Subject{
     public Message() {
 
     }
+
+    public Message(User sender, String content, String time) {
+        super();
+    }
 }

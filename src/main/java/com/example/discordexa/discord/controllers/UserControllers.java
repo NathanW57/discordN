@@ -8,11 +8,14 @@ import com.example.discordexa.discord.DTO.UserCreateDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
 
 import com.example.discordexa.discord.DTO.UserGetFinestDTO;
+import com.example.discordexa.discord.DTO.UserUpdateDTO;
 import com.example.discordexa.discord.Enum.Erole;
 import com.example.discordexa.discord.bean.ApiResponse;
 import com.example.discordexa.discord.bean.Role;
 import com.example.discordexa.discord.bean.User;
+import com.example.discordexa.discord.mapper.UserMapper;
 import com.example.discordexa.discord.repository.*;
+import jakarta.inject.Qualifier;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -67,6 +70,7 @@ public class UserControllers {
     }
 
 
+
     /**
      * Retrieves all users.
      *
@@ -74,13 +78,13 @@ public class UserControllers {
      */
     @GetMapping("/users")
     public ResponseEntity<List<UserGetDTO>> getAllUsers() throws SQLException {
-        List<User> userList = userRepository.findAll();
-        ModelMapper mapper = new ModelMapper();
-        return new ResponseEntity<>(userList
+        List<UserGetDTO> userList = userRepository.findAll()
                 .stream()
-                .map((user) -> mapper.map(user, UserGetDTO.class))
-                .toList(), HttpStatus.OK);
+                .map(UserMapper::toGetDto)
+                .toList();
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
+
 
     /**
      * Retrieves a user by ID.
@@ -92,14 +96,9 @@ public class UserControllers {
     @GetMapping("/user/{id}")
     public ResponseEntity<UserGetDTO> getUser(@PathVariable("id") int id) throws SQLException {
 
-        Optional<User> optional = userRepository.findById(id);
-
-        if(optional.isPresent()) {
-            ModelMapper mapper = new ModelMapper();
-            UserGetDTO userGetDTO = mapper.map(optional.get(), UserGetDTO.class);
-            return new ResponseEntity<>(userGetDTO, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return userRepository.findById(id).map(UserMapper::toGetDto)
+            .map(userGetDTO -> new ResponseEntity<>(userGetDTO, HttpStatus.OK)).
+                orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
     }
 
 
@@ -113,14 +112,9 @@ public class UserControllers {
     @GetMapping("/userFinest/{id}")
     public ResponseEntity<UserGetFinestDTO> getUserFinest(@PathVariable("id") long id) throws SQLException {
 
-        Optional<User> optional = userRepository.findByIdRole(id);
-
-        if(optional.isPresent()) {
-            ModelMapper mapper = new ModelMapper();
-            UserGetFinestDTO userGetDTO = mapper.map(optional.get(), UserGetFinestDTO.class);
-            return new ResponseEntity<>(userGetDTO, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+       return userRepository.findByIdRole(id).map(UserMapper::toGetFinestDto)
+                .map(userGetFinestDTO -> new ResponseEntity<>(userGetFinestDTO, HttpStatus.OK)).
+                orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
     }
 //
 //    /**
@@ -140,18 +134,15 @@ public class UserControllers {
         }
 
         try {
-            ModelMapper mapper = new ModelMapper();
-
             // Créer un nouvel utilisateur avec le rôle ROLE_USER
-            User newUser = mapper.map(userDTO, User.class);
+            User newUser = UserMapper.toEntity(userDTO);
             newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             Role role = roleRepository.findByName(Erole.ROLE_USER);
             newUser.addRole(role);
 
             // Sauvegarder l'utilisateur
             User savedUser = userRepository.save(newUser);
-            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
-
+            return new ResponseEntity<>(UserMapper.toGetDto(savedUser), HttpStatus.CREATED);
 
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
@@ -164,23 +155,6 @@ public class UserControllers {
 
 
 
-    //
-//    /**
-//     * Updates an existing user.
-//     *
-//     * @param user the User object with updated information
-//     * @return the updated User object or an error status
-//     */
-//    @PUT
-//    @Path("/users")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response updateUser(User user) throws SQLException {
-//        User updatedUser = userRepository.updateUser(user);
-//        return Response.ok(updatedUser).build();
-//    }
-//
-//
 //    /**
 //     * Deletes a user by ID.
 //     *
@@ -202,6 +176,50 @@ public class UserControllers {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
+    }
+
+
+
+
+    //    /**
+//     * Updates an existing user.
+//     *
+//     * @param user the User object with updated information
+//     * @return the updated User object or an error status
+//     */
+    @PutMapping(value = "/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            String errorMsg = result.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            User existingUser = userRepository.findById(Math.toIntExact(id))
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+
+            // Map UserUpdateDTO to User entity
+            User updatedUser = UserMapper.UpdatetoEntity(userUpdateDTO);
+
+            // We need to make sure we do not change the ID and roles during the update
+            updatedUser.setId(existingUser.getId());
+            updatedUser.setRole(existingUser.getRole());
+
+            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Ensure the password is encoded
+
+            // Save the updated user
+            User savedUser = userRepository.save(updatedUser);
+
+            // Map saved User entity to UserGetDTO
+            UserGetDTO userGetDTO = UserMapper.toGetDto(savedUser);
+
+            return new ResponseEntity<>(userGetDTO, HttpStatus.OK);
+
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
