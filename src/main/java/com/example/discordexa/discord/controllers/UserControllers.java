@@ -10,15 +10,12 @@ import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.DTO.UserGetFinestDTO;
 import com.example.discordexa.discord.DTO.UserUpdateDTO;
 import com.example.discordexa.discord.Enum.Erole;
-import com.example.discordexa.discord.bean.ApiResponse;
 import com.example.discordexa.discord.bean.Role;
 import com.example.discordexa.discord.bean.User;
 import com.example.discordexa.discord.mapper.UserMapper;
 import com.example.discordexa.discord.repository.*;
-import jakarta.inject.Qualifier;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -27,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.validation.BindingResult;
@@ -126,12 +122,6 @@ public class UserControllers {
 
     @PostMapping(value = "/users")
     public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDTO userDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            String errorMsg = result.getAllErrors().stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.joining(", "));
-            return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
-        }
 
         try {
             // Créer un nouvel utilisateur avec le rôle ROLE_USER
