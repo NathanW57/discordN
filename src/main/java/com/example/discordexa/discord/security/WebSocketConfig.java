@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat")
+        registry.addEndpoint("/chat/{channelId}")
                 .setAllowedOrigins("*") // Permettre les connexions depuis tous les domaines (à adapter en fonction de vos besoins)
                 .withSockJS();
     }
