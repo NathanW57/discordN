@@ -6,6 +6,8 @@ import com.example.discordexa.discord.DTO.GroupGetFinestDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.bean.Group;
 import com.example.discordexa.discord.bean.User;
+import com.example.discordexa.discord.mapper.GroupMapper;
+import com.example.discordexa.discord.mapper.UserMapper;
 import com.example.discordexa.discord.repository.GroupRepository;
 import com.example.discordexa.discord.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -48,12 +51,12 @@ public class GroupControllers {
      */
     @GetMapping("/groups")
     public ResponseEntity<List<GroupGetDTO>> getAllGroup() throws SQLException, ClassNotFoundException {
-        List<Group> groupList = groupRepository.findAll();
-        ModelMapper mapper = new ModelMapper();
-        return new ResponseEntity<>(groupList
+        List<GroupGetDTO> groupList = groupRepository.findAll()
                 .stream()
-                .map((group) -> mapper.map(group, GroupGetDTO.class))
-                .toList(), HttpStatus.OK);
+                .map(GroupMapper::toGetDto)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(groupList, HttpStatus.OK);
     }
 
 
@@ -107,11 +110,11 @@ public class GroupControllers {
         List<User> allUsers = userRepository.findAll();
         List<User> nonMembers = allUsers.stream()
                 .filter(user -> !group.getMembers().contains(user))
-                .collect(Collectors.toList());
+                .toList();
 
-        ModelMapper mapper = new ModelMapper();
+
         List<UserGetDTO> nonMemberDTOs = nonMembers.stream()
-                .map(user -> mapper.map(user, UserGetDTO.class))
+                .map(UserMapper::toGetDto)
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(nonMemberDTOs, HttpStatus.OK);
@@ -204,18 +207,15 @@ public class GroupControllers {
 
 
 
-
-
-
     @GetMapping("/groupsDetail")
     public ResponseEntity<List<GroupGetFinestDTO>> getAllGroupWithMembers(){
-        List<Group> groupList = groupRepository.findAll();
-        System.out.println(groupList.stream().toList());
-        ModelMapper mapper = new ModelMapper();
-        return new ResponseEntity<>(groupList
+
+        List<GroupGetFinestDTO> groupList = groupRepository.findAll()
                 .stream()
-                .map((group) -> mapper.map(group, GroupGetFinestDTO.class)).peek(System.out::println)
-                .toList(),(HttpStatus.OK));
+                .map(GroupMapper::toGetFinestDto)
+                .toList();
+
+        return new ResponseEntity<>(groupList,HttpStatus.OK);
     }
 
 
@@ -223,31 +223,45 @@ public class GroupControllers {
 
     @PostMapping("/groups")
     public ResponseEntity<GroupGetDTO> addGroup(@Valid @RequestBody GroupCreateDTO groupCreateDTO) throws SQLException, ClassNotFoundException {
-        ModelMapper mapper = new ModelMapper();
-        Group group = mapper.map(groupCreateDTO,Group.class);
-        Group newGroup = groupRepository.save(group);
+        try
+        {
+        Group group = GroupMapper.toEntity(groupCreateDTO);
 
-        GroupGetDTO groupGetDTO = mapper.map(newGroup, GroupGetDTO.class);
+        Group savedGroup = groupRepository.save(group);
 
-        return new ResponseEntity<>(groupGetDTO,HttpStatus.CREATED);
+
+        return new ResponseEntity<>(GroupMapper.toGetDto(savedGroup),HttpStatus.CREATED);
+        }
+        catch (DataAccessException dae) {
+            throw new RuntimeException(dae.getMessage());
+        }
     }
 
 
     @PutMapping("/groups/{id}")
     public ResponseEntity<GroupGetDTO> updateGroup(@PathVariable("id") Long id, @Valid GroupCreateDTO groupCreateDTO) throws SQLException, ClassNotFoundException {
-        Optional<Group> optionalGroup = groupRepository.findById(Math.toIntExact(id));
+        try {
+            Group existingGroup = groupRepository.findById(Math.toIntExact(id))
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid group Id:" + id));
 
-        if(optionalGroup.isPresent()){
-            ModelMapper mapper = new ModelMapper();
-            Group group = mapper.map(groupCreateDTO,Group.class);
-            group.setId(id);
-            Group newGroup = groupRepository.save(group);
+            // Map GroupUpdate to group entity
+            Group updateGroup = GroupMapper.toEntity(groupCreateDTO);
 
-            GroupGetDTO groupGetDTO = mapper.map(newGroup, GroupGetDTO.class);
+            // We need to make sure we do not change the ID
+            updateGroup.setId(existingGroup.getId());
 
-            return new ResponseEntity<>(groupGetDTO,HttpStatus.OK);
+            // Save the updated user
+            Group saveGroup = groupRepository.save(updateGroup);
+
+            // Map saved Group entity to GroupGetDTO
+            GroupGetDTO groupGetDTO = GroupMapper.toGetDto(saveGroup);
+
+            return new ResponseEntity<>(groupGetDTO, HttpStatus.OK);
+
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        catch (DataAccessException dae) {
+            throw new RuntimeException(dae.getMessage());
+        }
     }
 
 

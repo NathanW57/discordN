@@ -20,7 +20,6 @@ import java.util.Set;
 @Getter
 @Entity
 @Table(name = "user")
-@ToString
 public class User {
 
     @Id
@@ -49,8 +48,8 @@ public class User {
 
     @Column(name = "usr_password")
     @NotNull(message = "ne peut être vide")
-    @Size(min = 8, max = 200)
     @NotBlank
+    @Size(min = 8, max = 200 , message = "doit contenir au moins 8 caractères")
     private String password;
 
 

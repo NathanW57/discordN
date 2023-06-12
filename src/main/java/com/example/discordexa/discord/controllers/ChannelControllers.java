@@ -102,4 +102,25 @@ public class ChannelControllers {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
+
+    @GetMapping("/channel/{id}/members")
+public ResponseEntity<List<UserGetDTO>> getMembers(@PathVariable("id") Long id) {
+        Optional<Channel> optionalChannel = channelRepository.getChannelByIAndMembers(id);
+
+        if(optionalChannel.isPresent()){
+            List<UserGetDTO> userDTOs = optionalChannel.get().getMembers()
+                    .stream()
+                    .map(user -> {
+                        UserGetDTO userDTO = new UserGetDTO();
+                        userDTO.setId(user.getId());
+                        userDTO.setFirstname(user.getFirstname());
+                        userDTO.setLastname(user.getLastname());
+                        userDTO.setEmail(user.getEmail());
+                        return userDTO;
+                    })
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(userDTOs,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }

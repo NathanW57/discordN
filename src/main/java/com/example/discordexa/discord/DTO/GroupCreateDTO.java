@@ -15,7 +15,7 @@ import lombok.ToString;
 public class GroupCreateDTO {
     @NotNull(message = "Group is required")
     @NotBlank(message = "Group is required")
-    @Size(min = 2,max = 50,message = "Group Name must be 2-50 characters")
+    @Size(min = 2,max = 15,message = "Group Name must be 2-15 characters")
     private String name;
 
     public GroupCreateDTO(){

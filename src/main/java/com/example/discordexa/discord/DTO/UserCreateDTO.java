@@ -36,47 +36,6 @@ public class UserCreateDTO {
 
     public UserCreateDTO(){}
 
-//    public boolean isValidEmail() {
-//        if (email == null || email.isEmpty()) {
-//            return false;
-//        }
-//        String regex = "^[a-zA-Z0-9-_]+\\.*[a-zA-Z0-9-_]*@([a-zA-Z0-9]+\\.{1})+([a-zA-Z]){2,3}$";
-//        java.util.regex.Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(email.trim());
-//        return matcher.matches();
-//    }
-//
-//
-//    public boolean isValidPassword() {
-//        if (password == null || password.isEmpty()) {
-//            return false;
-//        }
-//        String regex = "^.{8,50}$";
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(password);
-//        return matcher.matches();
-//    }
-//
-//    public boolean isValidLastname() {
-//        if (lastname == null || lastname.isEmpty()) {
-//            return false;
-//        }
-//        String regex = "^[a-zA-Z]{2,50}$";
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(lastname.trim());
-//        return matcher.matches();
-//    }
-//
-//    public boolean isValidFirstname() {
-//        if (firstname == null || firstname.isEmpty()) {
-//            return false;
-//        }
-//        String regex = "^[a-zA-Z]{2,50}$";
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(firstname.trim());
-//        return matcher.matches();
-//    }
-
     public String getEmail() {
         return email;
     }

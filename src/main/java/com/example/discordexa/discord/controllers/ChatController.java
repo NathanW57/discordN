@@ -17,7 +17,6 @@ public class ChatController {
     @SendTo("/topic/messages")
     @Transactional
     public Message sendMessage(Message message) {
-        // Gérer l'envoi du message et créer l'objet Message
         User sender = message.getSender();
         String content = message.getContent();
         String time = new SimpleDateFormat("HH:mm").format(new Date());

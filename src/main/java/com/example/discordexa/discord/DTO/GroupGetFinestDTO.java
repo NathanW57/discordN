@@ -19,7 +19,6 @@ public class GroupGetFinestDTO {
 
     private long id;
     private String name;
-
     private List<UserGetDTO> members;
 
 
