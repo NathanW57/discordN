@@ -62,6 +62,9 @@ public class Channel {
     }
 
 
+    public void addMessage(Message message) {
+        this.messages.add(message);
+    }
 
 
 
