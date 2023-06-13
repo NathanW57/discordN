@@ -19,6 +19,8 @@ public abstract class Subject {
     protected LocalDateTime sentAt;
 
 
+
+
     public long getId() {
         return id;
     }

@@ -11,7 +11,6 @@ public class MessageMapper {
         Message message = new Message();
         message.setContent(message.getContent());
         message.setFile(message.getFile());
-        message.setSender(message.getSender());
         message.setSentAt(message.getSentAt());
         return message;
     }

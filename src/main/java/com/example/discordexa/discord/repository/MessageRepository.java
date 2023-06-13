@@ -8,12 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message,Integer> {
 
     List<Message> getAllBySenderId(Integer id);
 
+    List<Message> getAllByChannelId(Integer id);
+
     void deleteAllBySenderId(Long id);
+
 
 }

@@ -23,6 +23,9 @@ public class Message extends Subject{
     @OneToOne
     private File file;
 
+    @ManyToOne
+    private Channel channel;
+
 
     public Message() {
 

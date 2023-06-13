@@ -1,9 +1,6 @@
 package com.example.discordexa.discord.bean;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +19,9 @@ public class Meeting extends Subject{
 
     @Column(name = "mee_duration")
     private int duration;
+
+    @ManyToOne
+    private Channel channel;
 
 
     public Meeting() {

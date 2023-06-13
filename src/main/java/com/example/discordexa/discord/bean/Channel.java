@@ -36,18 +36,24 @@ public class Channel {
     @Column(name = "cha_visibility")
     private EVisibility visibility;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "channel")
+    @ToString.Exclude
     private List<Message> messages = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "channel")
+    @ToString.Exclude
     private List<Meeting> meetings = new ArrayList<>();
 
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "group_is_allowed_in", joinColumns = @JoinColumn(name = "cha_id", referencedColumnName =
+            "cha_id"), inverseJoinColumns = @JoinColumn(name = "gro_id", referencedColumnName = "gro_id"))
+    @ToString.Exclude
+    private Set<Group> groups = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "is_allowed_in", joinColumns = @JoinColumn(name = "cha_id", referencedColumnName = "cha_id"), inverseJoinColumns = @JoinColumn(name = "usr_id", referencedColumnName = "usr_id"))
     @ToString.Exclude
-    private List<User> members;
+    private Set<User> members;
 
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -55,7 +61,7 @@ public class Channel {
             joinColumns = @JoinColumn(name = "cha_id",referencedColumnName = "cha_id"),
             inverseJoinColumns = @JoinColumn (name = "usr_id", referencedColumnName = "usr_id")
     )
-    private List<User> subscribers;
+    private Set<User> subscribers;
 
     public Channel() {
 
@@ -68,37 +74,33 @@ public class Channel {
 
 
 
-//    public void addMessage(ChannelMessage message) {
-//        messages.add(new Message(message.getContent(), message.getSender(), this));
-//    }
+
+    public void addMeeting(Meeting meeting) {
+        meetings.add(meeting);
+    }
+
+    public void removeMeeting(Meeting meeting) {
+        meetings.remove(meeting);
+    }
 
 
-//    public void addMeeting(Meeting meeting) {
-//        meetings.add(meeting);
-//    }
-
-//    public void removeMeeting(Meeting meeting) {
-//        meetings.remove(meeting);
-//    }
-
-
-//    public void addMember(User member) {
-//        members.add(member);
-//    }
+    public void addMember(User member) {
+        members.add(member);
+    }
 //
-//    public void removeMember(User member) {
-//        members.remove(member);
-//    }
+    public void removeMember(User member) {
+        members.remove(member);
+    }
 //
 //
 //
-//    public void addSubscriber(User subscriber) {
-//        subscribers.add(subscriber);
-//    }
+    public void addSubscriber(User subscriber) {
+        subscribers.add(subscriber);
+    }
 
-//    public void removeSubscriber(User subscriber) {
-//        subscribers.remove(subscriber);
-//    }
+    public void removeSubscriber(User subscriber) {
+        subscribers.remove(subscriber);
+    }
 
     public void notifySubscribers() {
 
@@ -116,7 +118,7 @@ public class Channel {
         this.visibility = visibility;
     }
 
-    public void setMembers(List<User> members) {
+    public void setMembers(Set<User> members) {
         this.members = members;
     }
 }

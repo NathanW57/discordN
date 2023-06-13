@@ -28,6 +28,10 @@ public class Notification {
     @Column(name = "not_seen_at")
     private LocalDateTime seenAt;
 
+    @OneToOne(targetEntity = com.example.discordexa.discord.bean.Subject.class)
+    @JoinColumn(name = "not_subject", nullable = false)
+    private Subject subject;
+
 
 
     public Notification() {
