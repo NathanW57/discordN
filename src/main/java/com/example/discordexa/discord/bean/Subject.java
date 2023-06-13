@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public abstract class Subject {
     @Column(name = "sub_id")
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
 
     @Column(name = "sub_sent_at")

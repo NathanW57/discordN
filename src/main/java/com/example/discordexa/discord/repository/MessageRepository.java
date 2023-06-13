@@ -15,6 +15,7 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
 
     List<Message> getAllBySenderId(Integer id);
 
+    @Query("SELECT m FROM Message m WHERE m.channel.id = ?1")
     List<Message> getAllByChannelId(Integer id);
 
     void deleteAllBySenderId(Long id);

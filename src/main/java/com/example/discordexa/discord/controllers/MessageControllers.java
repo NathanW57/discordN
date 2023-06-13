@@ -46,7 +46,7 @@ public class MessageControllers {
 
 
     //all Message in a channelid
-    @GetMapping("/messages/{idChannel}")
+    @GetMapping("/messagesChannel/{idChannel}")
     public ResponseEntity<List<MessageGetDTO>> getAllMessageByChannelID(@PathVariable("idChannel") Integer id) throws SQLException, ClassNotFoundException {
         List<Message> messageList = messageRepository.getAllByChannelId(id);
 
@@ -88,15 +88,15 @@ public class MessageControllers {
 
 
     @PostMapping("/message")
-    public ResponseEntity<Message> addMessage(@Valid MessageCreateDTO messageCreateDTO,@RequestPart("message") Message message) throws SQLException, ClassNotFoundException {
+    public ResponseEntity<MessageGetDTO> addMessage(@Valid @RequestBody MessageCreateDTO messageCreateDTO) throws SQLException, ClassNotFoundException {
 
         ModelMapper mapper = new ModelMapper();
 
-        message = mapper.map(messageCreateDTO, Message.class);
+        Message message = mapper.map(messageCreateDTO, Message.class);
         Message newMessage = messageRepository.save(message);
 
         MessageGetDTO messageGetDTO = mapper.map(newMessage, MessageGetDTO.class);
-        return new ResponseEntity<>(message,HttpStatus.CREATED);
+        return new ResponseEntity<>(messageGetDTO,HttpStatus.CREATED);
 
     }
 

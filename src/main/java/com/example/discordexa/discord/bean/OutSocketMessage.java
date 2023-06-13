@@ -10,15 +10,13 @@ public class OutSocketMessage {
 
      UserGetDTO user;
      String content;
-     String time;
 
     public OutSocketMessage() {
     }
 
-    public OutSocketMessage(UserGetDTO user, String content, String time) {
+    public OutSocketMessage(UserGetDTO user, String content) {
         this.user = user;
         this.content = content;
-        this.time = time;
     }
 
 

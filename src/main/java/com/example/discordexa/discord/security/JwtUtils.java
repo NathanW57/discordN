@@ -17,6 +17,7 @@ public class JwtUtils {
     public String generateJwt(MyUserDetails userDetails){
 
         Map<String , Object> donnees = new HashMap<>();
+        donnees.put("id",userDetails.getUtilisateur().getId());
         donnees.put("firstname",userDetails.getUtilisateur().getFirstname());
         donnees.put("lastname",userDetails.getUtilisateur().getLastname());
         donnees.put("role",userDetails.getUtilisateur().getRole());

@@ -31,7 +31,15 @@ public class Message extends Subject{
 
     }
 
+    public Message(String content, User sender, Channel channel) {
+        this.content = content;
+        this.sender = sender;
+        this.channel = channel;
+    }
+
     public Message(User sender, String content, String time) {
         super();
     }
+
+
 }
