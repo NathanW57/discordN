@@ -12,6 +12,7 @@ import com.example.discordexa.discord.DTO.UserUpdateDTO;
 import com.example.discordexa.discord.Enum.Erole;
 import com.example.discordexa.discord.bean.Role;
 import com.example.discordexa.discord.bean.User;
+import com.example.discordexa.discord.exception.UserException;
 import com.example.discordexa.discord.mapper.UserMapper;
 import com.example.discordexa.discord.repository.*;
 import jakarta.transaction.Transactional;
@@ -94,7 +95,7 @@ public class UserControllers {
 
         return userRepository.findById(id).map(UserMapper::toGetDto)
             .map(userGetDTO -> new ResponseEntity<>(userGetDTO, HttpStatus.OK)).
-                orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+                orElseThrow(() -> new UserException("Invalid user Id:" + id));
     }
 
 
@@ -110,7 +111,7 @@ public class UserControllers {
 
        return userRepository.findByIdRole(id).map(UserMapper::toGetFinestDto)
                 .map(userGetFinestDTO -> new ResponseEntity<>(userGetFinestDTO, HttpStatus.OK)).
-                orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+                orElseThrow(() -> new UserException("Invalid user Id:" + id));
     }
 //
 //    /**
@@ -138,9 +139,6 @@ public class UserControllers {
             return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
         }
     }
-
-
-
 
 
 
@@ -188,7 +186,7 @@ public class UserControllers {
 
         try {
             User existingUser = userRepository.findById(Math.toIntExact(id))
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+                    .orElseThrow(() -> new UserException("Invalid user Id:" + id));
 
             // Map UserUpdateDTO to User entity
             User updatedUser = UserMapper.UpdatetoEntity(userUpdateDTO);
