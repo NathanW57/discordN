@@ -48,6 +48,17 @@ public class ChannelControllers {
     }
 
 
+    @GetMapping("/user/{userId}/channels")
+    public ResponseEntity<List<ChannelGetDTO>> getUserChannels(@PathVariable("userId") Long userId) {
+        List<Channel> userChannels = channelRepository.findAllByMembers_Id(userId);
+        List<ChannelGetDTO> channelGetDTOs = userChannels.stream()
+                .map(ChannelMapper::toGetDto)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(channelGetDTOs, HttpStatus.OK);
+    }
+
+
     //getGroupFinestById
     @GetMapping("/channel/finest/{id}")
     public ResponseEntity<ChannelGetFinestDTO> getChannelFinestById(@PathVariable("id") Long id) throws SQLException, ClassNotFoundException {
