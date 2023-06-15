@@ -1,6 +1,7 @@
 package com.example.discordexa.discord.bean;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,9 @@ public class InSocketMessage {
 
     private Long userId;
     private Long channelId;
+
+
+    @NotBlank(message = "Message cannot be blank")
     private String content;
 
     public InSocketMessage() {

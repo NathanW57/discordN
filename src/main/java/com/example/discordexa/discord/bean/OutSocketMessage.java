@@ -9,6 +9,7 @@ import lombok.Setter;
 public class OutSocketMessage {
 
      UserGetDTO user;
+
      String content;
 
     public OutSocketMessage() {

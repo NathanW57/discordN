@@ -23,5 +23,6 @@ public interface ChannelRepository extends JpaRepository<Channel,Integer> {
 
 
     List<Channel> findAllByMembers_Id(Long userId);
+    
 }
 

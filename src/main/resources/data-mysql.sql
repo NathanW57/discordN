@@ -1,7 +1,7 @@
 use discord;
 
 INSERT INTO user(usr_id,usr_email, usr_firstname, usr_lastname, usr_password)
-    value(1,"pierre.martin@message.fr","Pierres","Nath","$2a$10$PNdDRl/YjYp8ayQHlVvBseWWdxWUmweQ99//vNmlRCMkynwpyk.8y"),
+    value(1,"pierre.martin@message.fr","Pierres","Nath","$2a$10$nI07wfq92DlyRCuP1NsKXOXjQjb0FH4U/TUo59dIlRVRItZh2VGDa"),
     (2,"julien.cans@message.fr","Julien","Cansell","$2a$10$PNdDRl/YjYp8ayQHlVvBseWWdxWUmweQ99//vNmlRCMkynwpyk.8y"),
     (3,"lacus@yahoo.org","Angela","Celeste","$2a$10$PNdDRl/YjYp8ayQHlVvBseWWdxWUmweQ99//vNmlRCMkynwpyk.8y"),
     (4,"mauris.non@aol.couk","Risa","Wanda","$2a$10$PNdDRl/YjYp8ayQHlVvBseWWdxWUmweQ99//vNmlRCMkynwpyk.8y"),
