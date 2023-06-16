@@ -1,4 +1,4 @@
-package com.example.discordexa.discord.controllers;//package controllers;
+package com.example.discordexa.discord.controllers;
 
 import com.example.discordexa.discord.DTO.GroupCreateDTO;
 import com.example.discordexa.discord.DTO.GroupGetDTO;
@@ -6,6 +6,7 @@ import com.example.discordexa.discord.DTO.GroupGetFinestDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.bean.Group;
 import com.example.discordexa.discord.bean.User;
+import com.example.discordexa.discord.exception.UserException;
 import com.example.discordexa.discord.mapper.GroupMapper;
 import com.example.discordexa.discord.mapper.UserMapper;
 import com.example.discordexa.discord.repository.GroupRepository;
@@ -13,13 +14,15 @@ import com.example.discordexa.discord.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
 
 
 import java.sql.SQLException;
@@ -100,8 +103,8 @@ public class GroupControllers {
         }
     }
 
-    @GetMapping("/group/{id}/nonmembers")
-    public ResponseEntity<List<UserGetDTO>> getNonMembers(@PathVariable("id") Long id) {
+    @GetMapping("/group/{groupId:[0-9]+}/nonmembers")
+    public ResponseEntity<List<UserGetDTO>> getNonMembers(@PathVariable("groupId") Long id) {
         logger.info("Received request for non-members of group with id {}", id);
 
         Group group = groupRepository.findById(Math.toIntExact(id))
@@ -167,11 +170,8 @@ public class GroupControllers {
 
 
 
-
-
-
-    @GetMapping("/group/{id}")
-    public ResponseEntity<GroupGetFinestDTO> getGroupByID(@PathVariable("id") Long id) {
+    @GetMapping("/group/{groupId:[0-9]+}")
+    public ResponseEntity<GroupGetFinestDTO> getGroupByID(@PathVariable("groupId") Long id) {
         logger.info("Received request for group with id {}", id);
 
         Optional<Group> optionalGroup = groupRepository.findById(Math.toIntExact(id));
@@ -195,11 +195,11 @@ public class GroupControllers {
 
             groupDTO.setMembers(userDTOs);
 
-            logger.info("Responding with group {}", groupDTO);  // Log the returned group
+            logger.info("Responding with group {}", groupDTO);
 
             return ResponseEntity.ok().body(groupDTO);
         } else {
-            logger.error("Could not find group with id {}", id);  // Log error when group not found
+            logger.error("Could not find group with id {}", id);
             throw new NotFoundException("Could not find group with id=" + id);
         }
     }
@@ -221,8 +221,8 @@ public class GroupControllers {
 
 
 
-    @PostMapping("/groups")
-    public ResponseEntity<GroupGetDTO> addGroup(@Valid @RequestBody GroupCreateDTO groupCreateDTO) throws SQLException, ClassNotFoundException {
+    @PostMapping(value="/groups")
+    public ResponseEntity<GroupGetDTO> addGroup(@Valid @RequestBody GroupCreateDTO groupCreateDTO)  {
         try
         {
         Group group = GroupMapper.toEntity(groupCreateDTO);
@@ -238,30 +238,35 @@ public class GroupControllers {
     }
 
 
-    @PutMapping("/groups/{id}")
-    public ResponseEntity<GroupGetDTO> updateGroup(@PathVariable("id") Long id, @Valid GroupCreateDTO groupCreateDTO) throws SQLException, ClassNotFoundException {
+    @PutMapping("/group/{groupId:[0-9]+}")
+    public ResponseEntity<?> updateGroup(@PathVariable("groupId") Long id, @Valid @RequestBody GroupCreateDTO groupCreateDTO, BindingResult result) {
+        logger.info("Received request to update group with id {}", id);
+
+        if (result.hasErrors()) {
+            String errorMsg = result.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+        }
+
         try {
             Group existingGroup = groupRepository.findById(Math.toIntExact(id))
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid group Id:" + id));
+                    .orElseThrow(() -> new NotFoundException("Invalid group Id:" + id));
 
-            // Map GroupUpdate to group entity
-            Group updateGroup = GroupMapper.toEntity(groupCreateDTO);
+            Group groupUpdate = GroupMapper.toEntity(groupCreateDTO);
 
-            // We need to make sure we do not change the ID
-            updateGroup.setId(existingGroup.getId());
+            groupUpdate.setId(existingGroup.getId());
 
-            // Save the updated user
-            Group saveGroup = groupRepository.save(updateGroup);
+            Group saveGroup = groupRepository.save(groupUpdate);
 
-            // Map saved Group entity to GroupGetDTO
             GroupGetDTO groupGetDTO = GroupMapper.toGetDto(saveGroup);
 
             return new ResponseEntity<>(groupGetDTO, HttpStatus.OK);
 
-        }
-        catch (DataAccessException dae) {
+        }         catch (DataAccessException dae) {
             throw new RuntimeException(dae.getMessage());
         }
+
     }
 
 
