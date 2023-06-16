@@ -1,7 +1,7 @@
 use discord;
 
 INSERT INTO user(usr_id,usr_email, usr_firstname, usr_lastname, usr_password)
-    value(1,"pierre.martin@message.fr","Pierres","Nath","$2a$10$nI07wfq92DlyRCuP1NsKXOXjQjb0FH4U/TUo59dIlRVRItZh2VGDa"),
+    value(1,"pierre.martin@message.fr","Pierres","Martin","$2a$10$nI07wfq92DlyRCuP1NsKXOXjQjb0FH4U/TUo59dIlRVRItZh2VGDa"),
     (2,"julien.cans@message.fr","Julien","Cansell","$2a$10$PNdDRl/YjYp8ayQHlVvBseWWdxWUmweQ99//vNmlRCMkynwpyk.8y"),
     (3,"lacus@yahoo.org","Angela","Celeste","$2a$10$PNdDRl/YjYp8ayQHlVvBseWWdxWUmweQ99//vNmlRCMkynwpyk.8y"),
     (4,"mauris.non@aol.couk","Risa","Wanda","$2a$10$PNdDRl/YjYp8ayQHlVvBseWWdxWUmweQ99//vNmlRCMkynwpyk.8y"),
@@ -125,10 +125,13 @@ INSERT INTO file (fil_id, fil_name, fil_path)
     VALUE(1,"File de test","Path de test");
 
 INSERT INTO subject(sub_id, sub_sent_at)
-    VALUE(1,'2023-05-23 11:51:15.000000'),(2,'2023-05-23 11:51:15.000000'),(3,'2023-05-23 11:51:15.000000'),(4,'2023-05-23 11:51:15.000000');
+    VALUE(1,'2023-05-23 11:51:15.000000'),(2,'2023-05-23 11:51:15.000000'),(3,'2023-05-23 11:51:15.000000'),(4,'2023-05-23 11:51:15.000000'),(5,'2023-05-23 11:51:15.000000'),(6,'2023-05-23 11:51:15.000000'),(7,'2023-05-23 11:51:15.000000');
 
 INSERT INTO message (msg_content,sub_id,channel_cha_id, msg_file, msg_sender)
-    VALUE("Message de test",1,1,1,1),("Message de test 2",2,1,1,2),("Message de test 3",3,1,1,3),("Message de test 4",4,1,1,4);
+    VALUE("Hello ! ",1,1,1,1),("Hey ! ça va ? ",2,1,1,2)
+    ,("Très bien et vous ? ",3,1,1,3),("Oui moi ça va très bien !",4,1,1,4)
+    ,("Chaud pour un jap après? ",5,2,1,5),("Vas-y!",6,2,1,2)
+    ,("Vas-y je suis chaud ! ",7,2,1,5);
 
 INSERT INTO is_allowed_in(cha_id,usr_id)
     VALUE(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11),(1,12),(1,13),(1,14),(1,15),(1,16),(1,17),(1,18),(1,19),(1,20),(1,21),(1,22),(1,23),(1,24),(1,25),(1,26),(1,27),(1,28),(1,29),(1,30),(1,31),(1,32),(1,33),(1,34),(1,35),(1,36),(1,37),(1,38),(1,39),(1,40),(1,41),(1,42),(1,43),(1,44),(1,45),(1,46),(1,47),(1,48),(1,49),(1,50),(1,51),(1,52),(1,53),(1,54),(2,1),(2,2),(2,3),(2,4),(2,5),(2,6),(2,7),(2,8),(2,9),(2,10),(2,11),(2,12),(2,13),(2,14),(2,15),(2,16),(2,17),(2,18),(2,19),(2,20),(2,21),(2,22),(2,23),(2,24),(2,25),(2,26),(2,27),(2,28),(2,29),(2,30),(2,31),(2,32),(2,33),(2,34),(2,35),(2,36),(2,37),(2,38),(2,39),(2,40),(2,41),(2,42),(2,43),(2,44),(2,45),(2,46),(2,47),(2,48),(2,49),(2,50),(2,51),(2,52),(2,53),(2,54);
