@@ -3,6 +3,7 @@ package com.example.discordexa.discord.mapper;
 import com.example.discordexa.discord.DTO.ChannelCreateDTO;
 import com.example.discordexa.discord.DTO.ChannelGetDTO;
 import com.example.discordexa.discord.DTO.ChannelGetFinestDTO;
+import com.example.discordexa.discord.Enum.EVisibility;
 import com.example.discordexa.discord.bean.Channel;
 
 public class ChannelMapper {
@@ -10,6 +11,7 @@ public class ChannelMapper {
     public static Channel toEntity(ChannelCreateDTO channelCreateDTO) {
         Channel channel = new Channel();
         channel.setName(channelCreateDTO.getName());
+        channel.setVisibility(EVisibility.valueOf(channelCreateDTO.getVisibility()));
         return channel;
     }
 

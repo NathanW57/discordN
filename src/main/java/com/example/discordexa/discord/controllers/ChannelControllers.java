@@ -1,14 +1,17 @@
 package com.example.discordexa.discord.controllers;
 
-import com.example.discordexa.discord.DTO.ChannelGetDTO;
-import com.example.discordexa.discord.DTO.ChannelGetFinestDTO;
-import com.example.discordexa.discord.DTO.UserGetDTO;
+import com.example.discordexa.discord.DTO.*;
+import com.example.discordexa.discord.Enum.EVisibility;
 import com.example.discordexa.discord.bean.Channel;
+import com.example.discordexa.discord.bean.Group;
 import com.example.discordexa.discord.mapper.ChannelMapper;
+import com.example.discordexa.discord.mapper.GroupMapper;
 import com.example.discordexa.discord.repository.ChannelRepository;
 import com.example.discordexa.discord.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -133,5 +136,24 @@ public ResponseEntity<List<UserGetDTO>> getMembers(@PathVariable("id") Long id) 
             return new ResponseEntity<>(userDTOs,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+    @PostMapping(value="/channel")
+    public ResponseEntity<ChannelGetDTO> addChannel(@Valid @RequestBody ChannelCreateDTO channelCreateDTO)  {
+        try
+        {
+            Channel channel = ChannelMapper.toEntity(channelCreateDTO);
+
+
+            channel.setVisibility(EVisibility.PUBLIC);
+            Channel savedChannel = channelRepository.save(channel);
+
+
+            return new ResponseEntity<>(ChannelMapper.toGetDto(savedChannel),HttpStatus.CREATED);
+        }
+        catch (DataAccessException dae) {
+            throw new RuntimeException(dae.getMessage());
+        }
     }
 }
