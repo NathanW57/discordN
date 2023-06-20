@@ -1,4 +1,4 @@
-package com.example.discordexa.discord.bean;
+package com.example.discordexa.discord.DTO;
 
 
 import jakarta.validation.constraints.NotBlank;

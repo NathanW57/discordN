@@ -45,8 +45,8 @@ public class MessageControllers {
     }
 
 
-    //all Message in a channelid
-    @GetMapping("/messagesChannel/{idChannel}")
+
+    @GetMapping("/messagesChannel/{idChannel:[0-9]+}")
     public ResponseEntity<List<MessageGetDTO>> getAllMessageByChannelID(@PathVariable("idChannel") Integer id) throws SQLException, ClassNotFoundException {
         List<Message> messageList = messageRepository.getAllByChannelId(id);
 
@@ -60,7 +60,7 @@ public class MessageControllers {
 
 
 
-    @GetMapping("/messages/{idSender}")
+    @GetMapping("/messages/{idSender:[0-9]+}")
     public ResponseEntity<List<MessageGetDTO>> getAllMessageBySenderID(@PathVariable("idSender") Integer id) throws SQLException, ClassNotFoundException {
         List<Message> messageList = messageRepository.getAllBySenderId(id);
 
@@ -102,7 +102,7 @@ public class MessageControllers {
 
 
 
-    @DeleteMapping("/message/{id}")
+    @DeleteMapping("/message/{id:[0-9]+}")
     public ResponseEntity<Message> deleteChannel(@PathVariable("id") Integer id) {
         Optional<Message> optionalMessage = messageRepository.findById(id);
 

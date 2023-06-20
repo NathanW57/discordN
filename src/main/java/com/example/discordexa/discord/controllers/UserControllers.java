@@ -68,11 +68,7 @@ public class UserControllers {
 
 
 
-    /**
-     * Retrieves all users.
-     *
-     * @return a list of users
-     */
+
     @GetMapping("/users")
     public ResponseEntity<List<UserGetDTO>> getAllUsers() throws SQLException {
         List<UserGetDTO> userList = userRepository.findAll()
@@ -83,14 +79,9 @@ public class UserControllers {
     }
 
 
-    /**
-     * Retrieves a user by ID.
-     *
-     * @param id the user ID
-     * @return a User object and OK status or a NOT_FOUND status if not found
-     */
 
-    @GetMapping("/user/{id}")
+
+    @GetMapping("/user/{id:[0-9]+}")
     public ResponseEntity<UserGetDTO> getUser(@PathVariable("id") int id) throws SQLException {
 
         return userRepository.findById(id).map(UserMapper::toGetDto)
@@ -100,38 +91,27 @@ public class UserControllers {
 
 
 
-    /**
-     * Retrieves a user by ID.
-     *
-     * @param id the user ID
-     * @return a User object and OK status or a NOT_FOUND status if not found
-     */
-    @GetMapping("/userFinest/{id}")
+
+    @GetMapping("/userFinest/{id:[0-9]+}")
     public ResponseEntity<UserGetFinestDTO> getUserFinest(@PathVariable("id") long id) throws SQLException {
 
        return userRepository.findByIdRole(id).map(UserMapper::toGetFinestDto)
                 .map(userGetFinestDTO -> new ResponseEntity<>(userGetFinestDTO, HttpStatus.OK)).
                 orElseThrow(() -> new UserException("Invalid user Id:" + id));
     }
-//
-//    /**
-//     * Adds a new user.
-//     *
-//     * @param userDTO the UserCreateDTO object
-//     * @return a UserGetDTO object with the generated ID or an error status
-//     */
+
 
     @PostMapping(value = "/users")
     public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDTO userDTO, BindingResult result) {
 
         try {
-            // Créer un nouvel utilisateur avec le rôle ROLE_USER
+
             User newUser = UserMapper.toEntity(userDTO);
             newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             Role role = roleRepository.findByName(Erole.ROLE_USER);
             newUser.addRole(role);
 
-            // Sauvegarder l'utilisateur
+
             User savedUser = userRepository.save(newUser);
             return new ResponseEntity<>(UserMapper.toGetDto(savedUser), HttpStatus.CREATED);
 
@@ -143,13 +123,7 @@ public class UserControllers {
 
 
 
-//    /**
-//     * Deletes a user by ID.
-//     *
-//     * @param id the user ID
-//     * @return an ok status or an error status
-//     */
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/user/{id:[0-9]+}")
     @Transactional
     public ResponseEntity<User> deleteUser(@PathVariable("id") Long id) throws SQLException {
         Optional<User> optionalUtilisateurs = userRepository.findById(Math.toIntExact(id));
@@ -169,13 +143,7 @@ public class UserControllers {
 
 
 
-    //    /**
-//     * Updates an existing user.
-//     *
-//     * @param user the User object with updated information
-//     * @return the updated User object or an error status
-//     */
-    @PutMapping(value = "/users/{id}")
+    @PutMapping(value = "/users/{id:[0-9]+}")
     public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO, BindingResult result) {
         if (result.hasErrors()) {
             String errorMsg = result.getAllErrors().stream()
@@ -188,19 +156,16 @@ public class UserControllers {
             User existingUser = userRepository.findById(Math.toIntExact(id))
                     .orElseThrow(() -> new UserException("Invalid user Id:" + id));
 
-            // Map UserUpdateDTO to User entity
+
             User updatedUser = UserMapper.UpdatetoEntity(userUpdateDTO);
 
-            // We need to make sure we do not change the ID and roles during the update
             updatedUser.setId(existingUser.getId());
             updatedUser.setRole(existingUser.getRole());
 
             updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Ensure the password is encoded
 
-            // Save the updated user
             User savedUser = userRepository.save(updatedUser);
 
-            // Map saved User entity to UserGetDTO
             UserGetDTO userGetDTO = UserMapper.toGetDto(savedUser);
 
             return new ResponseEntity<>(userGetDTO, HttpStatus.OK);

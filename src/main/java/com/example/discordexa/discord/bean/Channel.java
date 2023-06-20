@@ -72,9 +72,6 @@ public class Channel {
         this.messages.add(message);
     }
 
-
-
-
     public void addMeeting(Meeting meeting) {
         meetings.add(meeting);
     }

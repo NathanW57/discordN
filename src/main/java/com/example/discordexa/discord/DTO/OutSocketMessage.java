@@ -1,4 +1,4 @@
-package com.example.discordexa.discord.bean;
+package com.example.discordexa.discord.DTO;
 
 import com.example.discordexa.discord.DTO.UserGetDTO;
 import lombok.Getter;

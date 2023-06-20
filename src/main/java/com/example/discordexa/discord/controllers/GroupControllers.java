@@ -6,7 +6,6 @@ import com.example.discordexa.discord.DTO.GroupGetFinestDTO;
 import com.example.discordexa.discord.DTO.UserGetDTO;
 import com.example.discordexa.discord.bean.Group;
 import com.example.discordexa.discord.bean.User;
-import com.example.discordexa.discord.exception.UserException;
 import com.example.discordexa.discord.mapper.GroupMapper;
 import com.example.discordexa.discord.mapper.UserMapper;
 import com.example.discordexa.discord.repository.GroupRepository;
@@ -17,7 +16,6 @@ import jakarta.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -47,11 +45,6 @@ public class GroupControllers {
 
 
 
-    /**
-     * Retrieves all groups.
-     *
-     * @return a list of groups
-     */
     @GetMapping("/groups")
     public ResponseEntity<List<GroupGetDTO>> getAllGroup() throws SQLException, ClassNotFoundException {
         List<GroupGetDTO> groupList = groupRepository.findAll()
@@ -87,7 +80,7 @@ public class GroupControllers {
     }
 
 
-    //get user by id in group by id
+
     @GetMapping("/group/{groupId:[0-9]+}/members/{userId:[0-9]+}")
     public ResponseEntity<?> getMember(@PathVariable("groupId") Long groupId, @PathVariable("userId") Long userId) {
         Group group = groupRepository.findById(Math.toIntExact(groupId))
@@ -270,7 +263,7 @@ public class GroupControllers {
     }
 
 
-    @DeleteMapping("/groups/{id}")
+    @DeleteMapping("/groups/{id:[0-9]+}")
     @Transactional
     public ResponseEntity<Group> deleteGroup(@PathVariable("id") Long id) {
         Optional<Group> optionalGroup = groupRepository.findById(Math.toIntExact(id));

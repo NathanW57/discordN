@@ -31,8 +31,8 @@ public class NotificationControllers {
     }
 
 
-    @GetMapping("/notification/{id}")
-    public ResponseEntity<Notification> getGroupById(@PathVariable("id") Integer id) throws SQLException, ClassNotFoundException {
+    @GetMapping("/notification/{id:[0-9]+}")
+    public ResponseEntity<Notification> getNotificationById(@PathVariable("id") Integer id) throws SQLException, ClassNotFoundException {
 
         Optional<Notification> optionalNotification = notificationRepository.findById(id);
 
@@ -42,29 +42,10 @@ public class NotificationControllers {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-////    @POST
-////    @Path("/channels")
-////    @Produces(MediaType.APPLICATION_JSON)
-////    public Response addGroup(ChannelCreateDTO channelCreateDTO) throws SQLException, ClassNotFoundException {
-////
-////        ModelMapper mapper = new ModelMapper();
-////
-////
-////        Channel channel = new Channel(
-////                channelCreateDTO.getName().trim()
-////        );
-////        Channel channel1 = repositoryChannel.addChannel(channel);
-////        ChannelGetDTO channelGetDTO = mapper.map(channel1, ChannelGetDTO.class);
-////
-////        return Response.ok(channelGetDTO)
-////                .status(201)
-////                .build();
-////    }
 
 
-
-    @DeleteMapping("/notification/{id}")
-    public ResponseEntity<Notification> deleteChannel(@PathVariable("id") Integer id) {
+    @DeleteMapping("/notification/{id:[0-9]+}")
+    public ResponseEntity<Notification> deleteNotification(@PathVariable("id") Integer id) {
         Optional<Notification> optionalNotification = notificationRepository.findById(id);
 
         if(optionalNotification.isPresent()){

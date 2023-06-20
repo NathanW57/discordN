@@ -62,8 +62,6 @@ public class MeetingCreateDTO {
         return organizerId > 0;
     }
 
-//    public boolean isValidDateTime(){
-//
-//    }
+
 
 }

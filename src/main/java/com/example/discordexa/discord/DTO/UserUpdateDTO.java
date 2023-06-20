@@ -14,22 +14,21 @@ import java.util.Set;
 @Setter
 public class UserUpdateDTO {
 
-    @NotNull(message = "ne peut être vide")
-    @Pattern(regexp = "^[a-zA-Z0-9-_]+\\.*[a-zA-Z0-9-_]*@([a-zA-Z0-9]+\\.{1})+([a-zA-Z]){2,3}$", message = "doit " +
-            "être" + " un email valide")
+    @NotNull(message = "email is required")
+    @Pattern(regexp = "^[a-zA-Z0-9-_]+\\.*[a-zA-Z0-9-_]*@([a-zA-Z0-9]+\\.{1})+([a-zA-Z]){2,3}$", message = "Invalid email address")
     private String email;
 
-    @NotNull(message = "ne peut être vide")
+    @NotNull(message = "firstname is required")
     @NotBlank
     @Size(min = 2, max = 50)
     private String firstname;
 
-    @NotNull(message = "ne peut être vide")
+    @NotNull(message = "lastname is required")
     @NotBlank
     @Size(min = 2, max = 50)
     private String lastname;
 
-    @NotNull(message = "ne peut être vide")
+    @NotNull(message = "password is required")
     @Size(min = 8, max = 200)
     @NotBlank
     private String password;

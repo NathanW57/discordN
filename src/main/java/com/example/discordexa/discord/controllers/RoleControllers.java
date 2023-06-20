@@ -34,7 +34,7 @@ public class RoleControllers {
 
 
 
-    @GetMapping("/role/{id}")
+    @GetMapping("/role/{id:[0-9]+}")
     public ResponseEntity<Optional<Role>> getRole(@PathVariable("id") Integer id) throws SQLException {
 
         Optional<Role> optionalRole = roleRepository.findById(id);

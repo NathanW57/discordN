@@ -44,10 +44,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 Claims donnes = jwtUtils.getData(token);
 
-                // Nous allons récupérer l'email dans la base de données
                 UserDetails userDetails = userDetailsService.loadUserByUsername(donnes.getSubject());
 
-                // On ajoute l'utilisateur au processus d'identification de spring security
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
